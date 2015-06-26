@@ -1,0 +1,74 @@
+# Index a flight
+POST /travel/flights
+{
+  "from": "SFO",
+  "to": "AMS",
+  "departs_at": "2015-06-30T13:50:00-0700",
+  "arrives_at": "2015-07-01T09:15:00+0100",
+  "numbers": [ "KL0606", "DL7893" ]
+}
+
+# Retrieve flight
+GET /travel/flights/REPLACEME
+
+# Index multiple flights (using bulk API)
+POST /travel/flights/_bulk
+{ "index": {} }
+{ "from": "AMS", "to": "SFO", "departs_at": "2015-07-01T10:30:00+0100", "arrives_at": "2015-07-01T12:50:00-0700", "numbers": "DL7982" }
+{ "index": {} }
+{ "from": "LON", "to": "SFO", "departs_at": "2015-07-01T09:05:00Z", "arrives_at": "2015-07-01T10:30:00-0700", "numbers": [ "BA032", "DL7" ] }
+{ "index": {} }
+{ "from": "SFO", "to": "LON", "departs_at": "2015-06-30T21:35:00-0700", "arrives_at": "2015-07-01T07:15:00Z", "numbers": [ "BA033", "DL8" ] }
+
+# Search for flights
+GET /travel/flights/_search?q=numbers:DL*
+
+# Search for flights (alt. syntax)
+POST /travel/flights/_search
+{
+  "query": {
+    "query_string": {
+      "query": "DL*"
+    }
+  }
+}
+
+# Search for all flights departing SFO
+POST /travel/flights/_search
+{
+  "query": {
+    "match": { "from": "SFO" }
+  }
+}
+
+# Search for all flights departing SFO after
+# a certain time
+POST /travel/flights/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "from": "SFO" } },
+        { "range": { "departs_at": { "gte": "2015-06-30T18:00:00-0700" } } }
+      ]
+    }
+  }
+}
+
+# Search - count flights, grouped by departure aiport
+POST travel/flights/_search
+{
+  "aggs": {
+    "count_by_departure_airport": {
+      "terms": { "field": "from" }
+    }
+  }
+}
+
+# ---------------
+
+# Clean up
+DELETE /travel
+
+# Verify
+GET /travel
