@@ -1,65 +1,69 @@
-# Index a flight
-POST /travel/flights
+# Index an email
+PUT /emails/email/1
 {
-  "from": "SFO",
-  "to": "AMS",
-  "departs_at": "2015-06-30T13:50:00-0700",
-  "arrives_at": "2015-07-01T09:15:00+0100",
-  "numbers": [ "KL0606", "DL7893" ]
+  "from": "thor@avengers.org",
+  "to": [ "tony@stark.com", "hulk@avengers.org" ],
+  "subject": "Greetings, Earthlings!",
+  "body": "Hey guys, heard from Jane lately?",
+  "sent": "2015-06-29T08:30:23-0700"
 }
 
-# Retrieve flight
-GET /travel/flights/REPLACEME
+# Retrieve email
+GET /emails/email/1
 
-# Index multiple flights (using bulk API)
-POST /travel/flights/_bulk
-{ "index": {} }
-{ "from": "AMS", "to": "SFO", "departs_at": "2015-07-01T10:30:00+0100", "arrives_at": "2015-07-01T12:50:00-0700", "numbers": "DL7982" }
-{ "index": {} }
-{ "from": "LON", "to": "SFO", "departs_at": "2015-07-01T09:05:00Z", "arrives_at": "2015-07-01T10:30:00-0700", "numbers": [ "BA032", "DL7" ] }
-{ "index": {} }
-{ "from": "SFO", "to": "LON", "departs_at": "2015-06-30T21:35:00-0700", "arrives_at": "2015-07-01T07:15:00Z", "numbers": [ "BA033", "DL8" ] }
+# Index multiple emails (using bulk API)
+POST /emails/email/_bulk
+{ "index": { "_id": 2 } }
+{ "from": "tony@stark.com", "to": [ "thor@avengers.org", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Don't you think I have better things to do than spy on your girlfriend?", "sent": "2015-06-29T17:03:32-0400" }
+{ "index": { "_id": 3 } }
+{ "from": "thor@avengers.org", "to": [ "tony@stark.com", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Like what?", "sent": "2015-06-30T02:11:24Z" }
+{ "index": { "_id": 4 } }
+{ "from": "hulk@avengers.org", "to": [ "tony@stark.com", "thor@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "This is making me angry. DON'T ANGER ME!!", "sent": "2015-06-30T06:14:20-0400" }
+{ "index": { "_id": 5 } }
+{ "from": "tony@stark.com", "to": "natasha@avengers.org", "subject": "Fwd: Greetings, Earthlings!", "body": "Banner is freaking out. You might need to do your... umm... anger management thing with him ;)", "sent": "2015-06-30T06:25:31-0400" }
+{ "index": { "_id": 6 } }
+{ "from": "natasha@avengers.org", "to": "hulk@avengers.org", "subject": "Coffee?", "body": "Hey Bruce, long time no see. Free for coffee this week?", "sent": "2015-06-30T07:55:34-0600" }
 
-# Search for flights
-GET /travel/flights/_search?q=numbers:DL*
+# Search for emails
+GET /emails/email/_search?q=anger
 
-# Search for flights (alt. syntax)
-POST /travel/flights/_search
+# Search for emails (alt. syntax)
+GET /emails/email/_search
 {
   "query": {
     "query_string": {
-      "query": "DL*"
+      "query": "anger"
     }
   }
 }
 
-# Search for all flights departing SFO
-POST /travel/flights/_search
+# Search for all emails to The Hulk
+GET /emails/email/_search
 {
   "query": {
-    "match": { "from": "SFO" }
+    "match": { "to": "hulk@avengers.org" }
   }
 }
 
-# Search for all flights departing SFO after
+# Search for all emails to The Hulk after
 # a certain time
-POST /travel/flights/_search
+GET /emails/email/_search
 {
   "query": {
     "bool": {
       "must": [
-        { "match": { "from": "SFO" } },
-        { "range": { "departs_at": { "gte": "2015-06-30T18:00:00-0700" } } }
+        { "match": { "to": "hulk@avengers.org" } },
+        { "range": { "sent": { "gte": "2015-06-30T00:00:00Z" } } }
       ]
     }
   }
 }
 
-# Search - count flights, grouped by departure aiport
-POST travel/flights/_search
+# Search - count emails, grouped by sender
+GET /emails/email/_search
 {
   "aggs": {
-    "count_by_departure_airport": {
+    "count_by_sender": {
       "terms": { "field": "from" }
     }
   }
@@ -68,7 +72,26 @@ POST travel/flights/_search
 # ---------------
 
 # Clean up
-DELETE /travel
+DELETE /emails
 
 # Verify
-GET /travel
+GET /emails
+
+# Re-create index
+POST /emails
+{
+  "mappings": {
+    "email": {
+      "properties": {
+        "from": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "to": {
+          "type": "string",
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}
