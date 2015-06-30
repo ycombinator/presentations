@@ -84,6 +84,202 @@
 					<p><img src="images/demo-time.png" /></p>
 				</section>
 
+				<section>
+
+					<section>
+						<h3>Index an email</h3>
+						<div class="http-code" data-markdown>
+							#### HTTP
+							```
+							curl -X PUT http://localhost:9200/emails/email/1 -d'
+							{
+  "from": "thor@avengers.org",
+  "to": [ "tony@stark.com", "hulk@avengers.org" ],
+  "subject": "Greetings, Earthlings!",
+  "body": "Hey guys, heard from Jane lately?",
+  "sent": "2015-06-29T08:30:23-0700"
+}
+							'
+							```
+						</div>
+						<div class="js-code" data-markdown>
+							#### JS
+							```javascript
+							var es = require("elasticsearch");
+
+							var client = new es.Client({
+								host: "localhost:9200"
+							});
+
+							client.index({
+  index: "emails",
+  type: "email",
+  id: 1,
+  body: {
+    "from": "thor@avengers.org",
+    "to": [ "tony@stark.com", "hulk@avengers.org" ],
+    "subject": "Greetings, Earthlings!",
+    "body": "Hey guys, heard from Jane lately?",
+    "sent": "2015-06-29T08:30:23-0700"
+  }
+							}, function (error, response) {
+  // ...
+							});
+							```
+						</div>
+					</section>
+
+					<section>
+						<h3>Retrieve email</h3>
+						<div class="http-code" data-markdown>
+							#### HTTP
+							```
+							curl -X GET http://localhost:9200/emails/email/1
+							```
+						</div>
+						<div class="js-code" data-markdown>
+							#### JS
+							```javascript
+							client.get({
+  index: "emails",
+  type: "email",
+  id: 1
+							}, function (error, response) {
+  // ...
+							});
+							```
+						</div>
+					</section>
+
+					<section>
+						<h3>Index multiple emails</h3>
+						<div class="http-code" data-markdown>
+							#### HTTP
+							```
+							curl -X POST http://localhost:9200/emails/email/_bulk -d '
+							{ "index": { "_id": 2 } }
+							{ "from": "tony@stark.com", "to": [ "thor@avengers.org", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Dont you think I have better things to do than spy on your girlfriend?", "sent": "2015-06-29T17:03:32-0400" }
+							{ "index": { "_id": 3 } }
+							{ "from": "thor@avengers.org", "to": [ "tony@stark.com", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Like what?", "sent": "2015-06-30T02:11:24Z" }
+							{ "index": { "_id": 4 } }
+							{ "from": "hulk@avengers.org", "to": [ "tony@stark.com", "thor@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "This is making me angry. DONT ANGER ME!!", "sent": "2015-06-30T06:14:20-0400" }
+							{ "index": { "_id": 5 } }
+							{ "from": "tony@stark.com", "to": "natasha@avengers.org", "subject": "Fwd: Greetings, Earthlings!", "body": "Banner is freaking out. You might need to do your... umm... anger management thing with him ;)", "sent": "2015-06-30T06:25:31-0400" }
+							{ "index": { "_id": 6 } }
+							{ "from": "natasha@avengers.org", "to": "hulk@avengers.org", "subject": "Coffee?", "body": "Hey Bruce, long time no see. Free for coffee this week?", "sent": "2015-06-30T07:55:34-0600" }
+							'
+							```
+						</div>
+						<div class="js-code" data-markdown>
+							#### JS
+							```javascript
+							client.bulk({
+							  index: "emails",
+							  type: "email",
+							  body: [
+    { index: { _id: 2 } },
+    { from: "tony@stark.com", to: [ "thor@avengers.org", "hulk@avengers.org" ], subject: "Re: Greetings, Earthlings!", body: "Dont you think I have better things to do than spy on your girlfriend?", sent: "2015-06-29T17:03:32-0400" },
+    { index: { _id: 3 } },
+    { from: "thor@avengers.org", to: [ "tony@stark.com", "hulk@avengers.org" ], subject: "Re: Greetings, Earthlings!", body: "Like what?", sent: "2015-06-30T02:11:24Z" },
+    { index: { _id: 4 } },
+    { from: "hulk@avengers.org", to: [ "tony@stark.com", "thor@avengers.org" ], subject: "Re: Greetings, Earthlings!", body: "This is making me angry. DONT ANGER ME!!", sent: "2015-06-30T06:14:20-0400" },
+    { index: { _id: 5 } },
+    { from: "tony@stark.com", to: "natasha@avengers.org", subject: "Fwd: Greetings, Earthlings!", body: "Banner is freaking out. You might need to do your... umm... anger management thing with him ;)", sent: "2015-06-30T06:25:31-0400" },
+    { index: { _id: 6 } },
+    { from: "natasha@avengers.org", to: "hulk@avengers.org", subject: "Coffee?", body: "Hey Bruce, long time no see. Free for coffee this week?", sent: "2015-06-30T07:55:34-0600" }
+  ]
+							}, function (error, response) {
+  // ...
+							});
+							```
+						</div>
+					</section>
+
+					<section>
+						<h4>Search for emails to The Hulk after a certain time</h4>
+						<div class="http-code" data-markdown>
+							#### HTTP
+							```
+							curl -X POST http://localhost:9200/emails/email/_search -d '
+							{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "to": "hulk@avengers.org" } },
+        { "range": { "sent": { "gte": "2015-06-30T00:00:00Z" } } }
+      ]
+    }
+  }
+}
+'
+						```
+					</div>
+					<div class="js-code" data-markdown>
+						#### JS
+						```javascript
+						client.search({
+  index: "emails",
+  type: "email",
+  body: {
+    query: {
+      bool: {
+        must: [
+          { match: { to: "hulk@avengers.org" } },
+          { range: { sent: { gte: "2015-06-30T00:00:00Z" } } }
+        ]
+      }
+    }
+  }
+}, function (error, response) {
+  // ...
+						});
+						```
+						</div>
+					</section>
+
+					<section>
+						<h4>Count emails grouped by sender</h4>
+						<div class="http-code" data-markdown>
+							#### HTTP
+							```
+							curl -X POST http://localhost:9200/emails/email/_search -d '
+{
+  "aggs": {
+    "count_by_sender": {
+      "terms": { "field": "from" }
+    }
+  }
+}
+'
+						```
+					</div>
+					<div class="js-code" data-markdown>
+						#### JS
+						```javascript
+						client.search({
+  index: "emails",
+  type: "email",
+  body: {
+    aggs: {
+      count_by_sender: {
+        terms: { field: "from" }
+      }
+    }
+  }
+}, function (error, response) {
+  // ...
+						});
+						```
+						</div>
+					</section>
+
+				</section>
+
+
+
+
+
+
 
 
 				<!-- Example of nested vertical slides -->
