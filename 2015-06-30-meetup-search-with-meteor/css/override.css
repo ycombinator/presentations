@@ -2,3 +2,18 @@
   border-style: none;
   border-width: 0px;
 }
+
+.http-code {
+  float: left;
+  width: 100%;
+}
+
+.js-code {
+  float: left;
+  width: 100%;
+}
+
+.http-code pre,
+.js-code pre {
+  font-size: 0.35em;
+}
