@@ -1,227 +1,219 @@
 <!doctype html>
 <html lang="en">
 
-	<head>
-		<meta charset="utf-8">
+  <head>
+    <meta charset="utf-8">
 
-		<title>Elasticsearch from Node.js</title>
+    <title>Elasticsearch from Node.js</title>
 
-		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
-		<meta name="author" content="Hakim El Hattab">
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
 
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/white.css" id="theme">
-		<link rel="stylesheet" href="css/override.css">
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/white.css" id="theme">
+    <link rel="stylesheet" href="css/override.css">
 
-		<!-- Code syntax highlighting -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
 
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
 
-		<!--[if lt IE 9]>
-		<script src="lib/js/html5shiv.js"></script>
-		<![endif]-->
-	</head>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
 
-	<body>
+  <body>
 
-		<div class="reveal">
+    <div class="reveal">
 
-			<!-- Any section element inside of this container is displayed as a slide -->
-			<div class="slides">
-				<section>
-					<h2>Elasticsearch with Node.js</h2>
-					<p>
-						<small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a></small>
-					</p>
-				</section>
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h2>Elasticsearch with Node.js</h2>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a></small>
+          </p>
+        </section>
 
-				<section>
-					<section>
-						<h2>Why use Elasticsearch?</h2>
-					</section>
-					<section>
-						<p>Full text search</p>
-						<p><img src="images/wikipedia.png" /></p>
-					</section>
-					<section>
-						<p>Structured search</p>
-						<p><img src="images/github.png" /></p>
-					</section>
-					<section>
-						<p>Faceted navigation</p>
-						<p><img src="images/kayak.png" width="25%" /></p>
-					</section>
-					<section>
-						<p>Analytics</p>
-						<p><img src="images/kibana.png" /></p>
-					</section>
-				</section>
+        <section>
+          <section>
+            <h2>Why use Elasticsearch?</h2>
+          </section>
+          <section>
+            <p>Full text search</p>
+            <p><img src="images/wikipedia.png" /></p>
+          </section>
+          <section>
+            <p>Structured search</p>
+            <p><img src="images/github.png" /></p>
+          </section>
+          <section>
+            <p>Faceted navigation</p>
+            <p><img src="images/kayak.png" width="25%" /></p>
+          </section>
+          <section>
+            <p>Analytics</p>
+            <p><img src="images/kibana.png" /></p>
+          </section>
+        </section>
 
-				<section>
-					<h2>Features</h2>
-					<ul>
-						<li class="fragment">Easy to get started<span class="fragment"> &mdash; <a href="https://www.elastic.co/downloads/elasticsearch">download</a>, extract, run!</span></li>
-						<li class="fragment">Scalable<span class="fragment"> &mdash; just add or remove nodes as needed</span></li>
-						<li class="fragment"><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html">Well-documented</a> HTTP API</li>
-						<li class="fragment">Supported clients for Javascript, Python, ...<span class="fragment">, even Perl &#9787;</span></li>
-					</ul>
-				</section>
+        <section>
+          <h2>Features</h2>
+          <ul>
+            <li class="fragment">Easy to get started<span class="fragment"> &mdash; <a href="https://www.elastic.co/downloads/elasticsearch">download</a>, extract, run!</span></li>
+            <li class="fragment">Scalable<span class="fragment"> &mdash; just add or remove nodes as needed</span></li>
+            <li class="fragment"><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html">Well-documented</a> HTTP API</li>
+            <li class="fragment">Supported clients for Javascript, Python, ...<span class="fragment">, even Perl &#9787;</span></li>
+          </ul>
+        </section>
 
-				<section>
-					<h2>Concepts</h2>
-					<dl>
-						<div class="fragment">
-							<dt>Document</dt>
-							<dd>The unit of data fed into Elasticsearch, in JSON format</dd>
-							<aside class="notes">
-								Example: a single email
-							</aside>
-						</div>
-						<div class="fragment">
-							<dt>Index</dt>
-							<dd>A collection of documents stored in Elasticsearch</dd>
-							<aside class="notes">
-								Example: an index of emails
-							</aside>
-						</div>
-						<div class="fragment">
-							<dt>Type</dt>
-							<dd>The category of the document within an index</dd>
-							<aside class="notes">
-								Example: index may contain two types of documents - emails and attachments
-							</aside>
-						</div>
-					</dl>
-				</section>
+        <section>
+          <h2>Concepts</h2>
+          <dl>
+            <div class="fragment">
+              <dt>Document</dt>
+              <dd>The unit of data fed into Elasticsearch, in JSON format</dd>
+              <aside class="notes">
+                Example: a single email
+              </aside>
+            </div>
+            <div class="fragment">
+              <dt>Index</dt>
+              <dd>A collection of documents stored in Elasticsearch</dd>
+              <aside class="notes">
+                Example: an index of emails
+              </aside>
+            </div>
+            <div class="fragment">
+              <dt>Type</dt>
+              <dd>The category of the document within an index</dd>
+              <aside class="notes">
+                Example: index may contain two types of documents - emails and attachments
+              </aside>
+            </div>
+          </dl>
+        </section>
 
-				<section>
-					<h2>Concepts</h2>
-					<dl>
-						<div class="fragment">
-							<dt>Shard</dt>
-							<dd>A part of an index, consisting of a subset of documents in that index</dd>
-						</div>
-						<div class="fragment">
-							<dt>Node</dt>
-							<dd>A running Elasticsearch process</dd>
-						</div>
-						<div class="fragment">
-							<dt>Cluster</dt>
-							<dd>A collection of nodes with the same <code>cluster.name</code></dd>
-						</div>
-					</dl>
-				</section>
+        <section>
+          <h2>Concepts</h2>
+          <dl>
+            <div class="fragment">
+              <dt>Shard</dt>
+              <dd>A part of an index, consisting of a subset of documents in that index</dd>
+            </div>
+            <div class="fragment">
+              <dt>Node</dt>
+              <dd>A running Elasticsearch process</dd>
+            </div>
+            <div class="fragment">
+              <dt>Cluster</dt>
+              <dd>A collection of nodes with the same <code>cluster.name</code></dd>
+            </div>
+          </dl>
+        </section>
 
-				<section>
-					<p><img src="images/demo-time.png" /></p>
-				</section>
+        <section>
+          <p><img src="images/demo-time.png" /></p>
+        </section>
 
-				<section>
+        <section>
 
-					<section>
-						<h3>Index an email</h3>
-						<div class="http-code" data-markdown>
-							#### HTTP
-							```
-							curl -X PUT http://localhost:9200/emails/email/1 -d'
-							{
+          <section>
+            <h3>Index an email</h3>
+            <h4>HTTP</h4>
+            <pre><code data-trim>
+curl -X PUT http://localhost:9200/emails/email/1 -d'
+{
   "from": "thor@avengers.org",
   "to": [ "tony@stark.com", "hulk@avengers.org" ],
   "subject": "Greetings, Earthlings!",
   "body": "Hey guys, heard from Jane lately?",
   "sent": "2015-06-29T08:30:23-0700"
 }
-							'
-							```
-						</div>
-						<div class="js-code" data-markdown>
-							#### JS
-							```javascript
-							var es = require("elasticsearch");
+'</code></pre>
+            <h4>JS</h4>
+            <pre><code class="javascript" data-trim>
+var es = require("elasticsearch");
 
-							var client = new es.Client({
-								host: "localhost:9200"
-							});
+var client = new es.Client({
+  host: "localhost:9200"
+});
 
-							client.index({
+client.index({
   index: "emails",
   type: "email",
   id: 1,
   body: {
-    "from": "thor@avengers.org",
-    "to": [ "tony@stark.com", "hulk@avengers.org" ],
-    "subject": "Greetings, Earthlings!",
-    "body": "Hey guys, heard from Jane lately?",
-    "sent": "2015-06-29T08:30:23-0700"
+    from: "thor@avengers.org",
+    to: [ "tony@stark.com", "hulk@avengers.org" ],
+    subject: "Greetings, Earthlings!",
+    body: "Hey guys, heard from Jane lately?",
+    sent: "2015-06-29T08:30:23-0700"
   }
-							}, function (error, response) {
-  // ...
-							});
-							```
-						</div>
-					</section>
+}, function (error, response) {
+  // response = { _index: "emails", _type: "email", _id: "1", _version: 1, created: true }
+});
+            </code></pre>
+          </section>
 
-					<section>
-						<h3>Retrieve email</h3>
-						<div class="http-code" data-markdown>
-							#### HTTP
-							```
-							curl -X GET http://localhost:9200/emails/email/1
-							```
-						</div>
-						<div class="js-code" data-markdown>
-							#### JS
-							```javascript
-							client.get({
+          <section>
+            <h3>Retrieve email</h3>
+            <div class="http-code">
+              <h4>HTTP</h4>
+              <pre><code data-trim>
+              curl -X GET http://localhost:9200/emails/email/1
+              </code></pre>
+            </div>
+            <div class="js-code">
+              <h4>JS</h4>
+              <pre><code class="javascript" data-trim>
+client.get({
   index: "emails",
   type: "email",
   id: 1
-							}, function (error, response) {
+}, function (error, response) {
   // ...
-							});
-							```
-						</div>
-					</section>
+});
+              </code></pre>
+            </div>
+          </section>
 
-					<section>
-						<h3>Index multiple emails</h3>
-						<div class="http-code" data-markdown>
-							#### HTTP
-							```
-							curl -X POST http://localhost:9200/emails/email/_bulk -d '
-							{ "index": { "_id": 2 } }
-							{ "from": "tony@stark.com", "to": [ "thor@avengers.org", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Dont you think I have better things to do than spy on your girlfriend?", "sent": "2015-06-29T17:03:32-0400" }
-							{ "index": { "_id": 3 } }
-							{ "from": "thor@avengers.org", "to": [ "tony@stark.com", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Like what?", "sent": "2015-06-30T02:11:24Z" }
-							{ "index": { "_id": 4 } }
-							{ "from": "hulk@avengers.org", "to": [ "tony@stark.com", "thor@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "This is making me angry. DONT ANGER ME!!", "sent": "2015-06-30T06:14:20-0400" }
-							{ "index": { "_id": 5 } }
-							{ "from": "tony@stark.com", "to": "natasha@avengers.org", "subject": "Fwd: Greetings, Earthlings!", "body": "Banner is freaking out. You might need to do your... umm... anger management thing with him ;)", "sent": "2015-06-30T06:25:31-0400" }
-							{ "index": { "_id": 6 } }
-							{ "from": "natasha@avengers.org", "to": "hulk@avengers.org", "subject": "Coffee?", "body": "Hey Bruce, long time no see. Free for coffee this week?", "sent": "2015-06-30T07:55:34-0600" }
-							'
-							```
-						</div>
-						<div class="js-code" data-markdown>
-							#### JS
-							```javascript
-							client.bulk({
-							  index: "emails",
-							  type: "email",
-							  body: [
+          <section>
+            <h3>Index multiple emails</h3>
+            <h4>HTTP</h4>
+            <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/email/_bulk -d '
+{ "index": { "_id": 2 } }
+{ "from": "tony@stark.com", "to": [ "thor@avengers.org", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Dont you think I have better things to do than spy on your girlfriend?", "sent": "2015-06-29T17:03:32-0400" }
+{ "index": { "_id": 3 } }
+{ "from": "thor@avengers.org", "to": [ "tony@stark.com", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Like what?", "sent": "2015-06-30T02:11:24Z" }
+{ "index": { "_id": 4 } }
+{ "from": "hulk@avengers.org", "to": [ "tony@stark.com", "thor@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "This is making me angry. DONT ANGER ME!!", "sent": "2015-06-30T06:14:20-0400" }
+{ "index": { "_id": 5 } }
+{ "from": "tony@stark.com", "to": "natasha@avengers.org", "subject": "Fwd: Greetings, Earthlings!", "body": "Banner is freaking out. You might need to do your... umm... anger management thing with him ;)", "sent": "2015-06-30T06:25:31-0400" }
+{ "index": { "_id": 6 } }
+{ "from": "natasha@avengers.org", "to": "hulk@avengers.org", "subject": "Coffee?", "body": "Hey Bruce, long time no see. Free for coffee this week?", "sent": "2015-06-30T07:55:34-0600" }
+'
+            </code></pre>
+            <h4>JS</h4>
+            <pre><code class="javascript" data-trim>
+client.bulk({
+  index: "emails",
+  type: "email",
+  body: [
     { index: { _id: 2 } },
     { from: "tony@stark.com", to: [ "thor@avengers.org", "hulk@avengers.org" ], subject: "Re: Greetings, Earthlings!", body: "Dont you think I have better things to do than spy on your girlfriend?", sent: "2015-06-29T17:03:32-0400" },
     { index: { _id: 3 } },
@@ -233,20 +225,18 @@
     { index: { _id: 6 } },
     { from: "natasha@avengers.org", to: "hulk@avengers.org", subject: "Coffee?", body: "Hey Bruce, long time no see. Free for coffee this week?", sent: "2015-06-30T07:55:34-0600" }
   ]
-							}, function (error, response) {
-  // ...
-							});
-							```
-						</div>
-					</section>
+}, function (error, response) {
+  // response = { took: 3, errors: false, items: [ { index: ... }, { index: ... }, ... ]}
+});
+            </code></pre>
+          </section>
 
-					<section>
-						<h4>Search for emails to The Hulk after a certain time</h4>
-						<div class="http-code" data-markdown>
-							#### HTTP
-							```
-							curl -X POST http://localhost:9200/emails/email/_search -d '
-							{
+          <section>
+            <h4>Search for emails to The Hulk after a certain time</h4>
+            <h4>HTTP</h4>
+            <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/email/_search -d '
+{
   "query": {
     "bool": {
       "must": [
@@ -257,12 +247,10 @@
   }
 }
 '
-						```
-					</div>
-					<div class="js-code" data-markdown>
-						#### JS
-						```javascript
-						client.search({
+            </pre></code>
+            <h4>JS</h4>
+            <pre><code style="javascript" data-trim>
+client.search({
   index: "emails",
   type: "email",
   body: {
@@ -276,18 +264,16 @@
     }
   }
 }, function (error, response) {
-  // ...
-						});
-						```
-						</div>
-					</section>
+  // response = { took: 13, hits: { total: 4, max_score: 1.103589, hits: [ ... ] } }
+});
+            </code></pre>
+          </section>
 
-					<section>
-						<h4>Count emails grouped by sender</h4>
-						<div class="http-code" data-markdown>
-							#### HTTP
-							```
-							curl -X POST http://localhost:9200/emails/email/_search -d '
+          <section>
+            <h3>Count emails grouped by sender</h3>
+            <h4>HTTP</h4>
+            <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/email/_search -d '
 {
   "aggs": {
     "count_by_sender": {
@@ -296,12 +282,10 @@
   }
 }
 '
-						```
-					</div>
-					<div class="js-code" data-markdown>
-						#### JS
-						```javascript
-						client.search({
+            </code></pre>
+            <h4>JS</h4>
+            <pre><code class="javascript" data-trim>
+client.search({
   index: "emails",
   type: "email",
   body: {
@@ -312,63 +296,62 @@
     }
   }
 }, function (error, response) {
-  // ...
-						});
-						```
-						</div>
-					</section>
+  // response = { took: 5, hits: { ... }, aggregations: { count_by_sender: { buckets: [ ... ] } } }
+});
+            </code></pre>
+          </section>
 
-				</section>
+        </section>
 
-				<section>
-					<h2>Why use the javascript client?</h2>
-					<ul>
-						<li class="fragment">Uses Javascript language idioms</li>
-						<li class="fragment">Low-level and unopinionated: maps 1-1 with HTTP API</li>
-						<li class="fragment">Cluster sniffing</li>
-						<li class="fragment">Load balances amongst nodes</li>
-						<li class="fragment">Detects and gracefully handles node failures</li>
- 						<li class="fragment">Officially supported by Elastic</li>
-						<li class="fragment"><a href="https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/index.html">Well-documented API</a></li>
-					</ul>
-				</section>
+        <section>
+          <h2>Why use the javascript client?</h2>
+          <ul>
+            <li class="fragment">Uses Javascript language idioms</li>
+            <li class="fragment">Low-level and unopinionated: maps 1-1 with HTTP API</li>
+            <li class="fragment">Cluster sniffing</li>
+            <li class="fragment">Load balances amongst nodes</li>
+            <li class="fragment">Detects and gracefully handles node failures</li>
+             <li class="fragment">Officially supported by Elastic</li>
+            <li class="fragment"><a href="https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/index.html">Well-documented API</a></li>
+          </ul>
+        </section>
 
-				<section>
-					<h2>Thank You</h2>
-					<p>https://discuss.elastic.co/</p>
-				</section>
+        <section>
+          <h2>Thank You</h2>
+          <p>https://discuss.elastic.co/</p>
+        </section>
 
-			</div>
+      </div>
 
-		</div>
+    </div>
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
 
-		<script>
+    <script>
 
-			// Full list of configuration options available at:
-			// https://github.com/hakimel/reveal.js#configuration
-			Reveal.initialize({
-				controls: true,
-				progress: true,
-				history: true,
-				center: true,
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
 
-				transition: 'slide', // none/fade/slide/convex/concave/zoom
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
 
-				// Optional reveal.js plugins
-				dependencies: [
-					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
-					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
-					{ src: 'plugin/zoom-js/zoom.js', async: true },
-					{ src: 'plugin/notes/notes.js', async: true }
-				]
-			});
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
 
-		</script>
+    </script>
 
-	</body>
+  </body>
 </html>

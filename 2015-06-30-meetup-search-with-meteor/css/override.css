@@ -3,17 +3,7 @@
   border-width: 0px;
 }
 
-.http-code {
-  float: left;
-  width: 100%;
-}
-
-.js-code {
-  float: left;
-  width: 100%;
-}
-
-.http-code pre,
-.js-code pre {
-  font-size: 0.35em;
+.reveal pre code {
+  font-size: 0.6em;
+  line-height: normal;
 }
