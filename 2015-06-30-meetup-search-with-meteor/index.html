@@ -81,6 +81,51 @@
 				</section>
 
 				<section>
+					<h2>Concepts</h2>
+					<dl>
+						<div class="fragment">
+							<dt>Document</dt>
+							<dd>The unit of data fed into Elasticsearch, in JSON format</dd>
+							<aside class="notes">
+								Example: a single email
+							</aside>
+						</div>
+						<div class="fragment">
+							<dt>Index</dt>
+							<dd>A collection of documents stored in Elasticsearch</dd>
+							<aside class="notes">
+								Example: an index of emails
+							</aside>
+						</div>
+						<div class="fragment">
+							<dt>Type</dt>
+							<dd>The category of the document within an index</dd>
+							<aside class="notes">
+								Example: index may contain two types of documents - emails and attachments
+							</aside>
+						</div>
+					</dl>
+				</section>
+
+				<section>
+					<h2>Concepts</h2>
+					<dl>
+						<div class="fragment">
+							<dt>Shard</dt>
+							<dd>A part of an index, consisting of a subset of documents in that index</dd>
+						</div>
+						<div class="fragment">
+							<dt>Node</dt>
+							<dd>A running Elasticsearch process</dd>
+						</div>
+						<div class="fragment">
+							<dt>Cluster</dt>
+							<dd>A collection of nodes with the same <code>cluster.name</code></dd>
+						</div>
+					</dl>
+				</section>
+
+				<section>
 					<p><img src="images/demo-time.png" /></p>
 				</section>
 
@@ -275,8 +320,23 @@
 
 				</section>
 
+				<section>
+					<h2>Why use the javascript client?</h2>
+					<ul>
+						<li class="fragment">Uses Javascript language idioms</li>
+						<li class="fragment">Low-level and unopinionated: maps 1-1 with HTTP API</li>
+						<li class="fragment">Cluster sniffing</li>
+						<li class="fragment">Load balances amongst nodes</li>
+						<li class="fragment">Detects and gracefully handles node failures</li>
+ 						<li class="fragment">Officially supported by Elastic</li>
+						<li class="fragment"><a href="https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/index.html">Well-documented API</a></li>
+					</ul>
+				</section>
 
-
+				<section>
+					<h2>Thank You</h2>
+					<p>https://discuss.elastic.co/</p>
+				</section>
 
 
 
