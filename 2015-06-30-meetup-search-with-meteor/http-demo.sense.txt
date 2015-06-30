@@ -28,7 +28,7 @@ POST /emails/email/_bulk
 GET /emails/email/_search?q=anger
 
 # Search for emails (alt. syntax)
-GET /emails/email/_search
+POST /emails/email/_search
 {
   "query": {
     "query_string": {
@@ -38,7 +38,7 @@ GET /emails/email/_search
 }
 
 # Search for all emails to The Hulk
-GET /emails/email/_search
+POST /emails/email/_search
 {
   "query": {
     "match": { "to": "hulk@avengers.org" }
@@ -47,7 +47,7 @@ GET /emails/email/_search
 
 # Search for all emails to The Hulk after
 # a certain time
-GET /emails/email/_search
+POST /emails/email/_search
 {
   "query": {
     "bool": {
@@ -60,7 +60,7 @@ GET /emails/email/_search
 }
 
 # Search - count emails, grouped by sender
-GET /emails/email/_search
+POST /emails/email/_search
 {
   "aggs": {
     "count_by_sender": {
