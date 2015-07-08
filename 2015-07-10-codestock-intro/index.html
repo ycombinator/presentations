@@ -89,23 +89,22 @@
             <div class="fragment">
               <dt>Document</dt>
               <dd>The unit of data fed into Elasticsearch, in JSON format</dd>
-              <aside class="notes">
-                Example: a single email
-              </aside>
+              <pre><code data-trim>
+{
+  "from": "tony@stark.com",
+  "to": [ "thor@avengers.org", "natasha@avengers.org" ],
+  "subject": "Infinity Stones",
+  "body": "..."
+}
+              </code></pre>
             </div>
             <div class="fragment">
               <dt>Index</dt>
               <dd>A collection of documents stored in Elasticsearch</dd>
-              <aside class="notes">
-                Example: an index of emails
-              </aside>
             </div>
             <div class="fragment">
               <dt>Type</dt>
               <dd>The category of the document within an index</dd>
-              <aside class="notes">
-                Example: index may contain two types of documents - emails and attachments
-              </aside>
             </div>
           </dl>
         </section>
