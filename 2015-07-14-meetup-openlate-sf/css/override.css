@@ -1,0 +1,9 @@
+.reveal section img {
+  border-style: none;
+  border-width: 0px;
+}
+
+.reveal pre code {
+  font-size: 0.9em;
+  line-height: normal;
+}

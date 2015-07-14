@@ -1,0 +1,97 @@
+# Index an email
+PUT /emails/email/1
+{
+  "from": "thor@avengers.org",
+  "to": [ "tony@stark.com", "hulk@avengers.org" ],
+  "subject": "Greetings, Earthlings!",
+  "body": "Hey guys, heard from Jane lately?",
+  "sent": "2015-06-29T08:30:23-0700"
+}
+
+# Retrieve email
+GET /emails/email/1
+
+# Index multiple emails (using bulk API)
+POST /emails/email/_bulk
+{ "index": { "_id": 2 } }
+{ "from": "tony@stark.com", "to": [ "thor@avengers.org", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Don't you think I have better things to do than spy on your girlfriend?", "sent": "2015-06-29T17:03:32-0400" }
+{ "index": { "_id": 3 } }
+{ "from": "thor@avengers.org", "to": [ "tony@stark.com", "hulk@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "Like what?", "sent": "2015-06-30T02:11:24Z" }
+{ "index": { "_id": 4 } }
+{ "from": "hulk@avengers.org", "to": [ "tony@stark.com", "thor@avengers.org" ], "subject": "Re: Greetings, Earthlings!", "body": "This is making me angry. DON'T ANGER ME!!", "sent": "2015-06-30T06:14:20-0400" }
+{ "index": { "_id": 5 } }
+{ "from": "tony@stark.com", "to": "natasha@avengers.org", "subject": "Fwd: Greetings, Earthlings!", "body": "Banner is freaking out. You might need to do your... umm... anger management thing with him ;)", "sent": "2015-06-30T06:25:31-0400" }
+{ "index": { "_id": 6 } }
+{ "from": "natasha@avengers.org", "to": "hulk@avengers.org", "subject": "Coffee?", "body": "Hey Bruce, long time no see. Free for coffee this week?", "sent": "2015-06-30T07:55:34-0600" }
+
+# Search for emails
+GET /emails/email/_search?q=anger
+
+# Search for emails (alt. syntax)
+POST /emails/email/_search
+{
+  "query": {
+    "query_string": {
+      "query": "anger"
+    }
+  }
+}
+
+# Search for all emails to The Hulk
+POST /emails/email/_search
+{
+  "query": {
+    "match": { "to": "hulk@avengers.org" }
+  }
+}
+
+# Search for all emails to The Hulk after
+# a certain time
+POST /emails/email/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "to": "hulk@avengers.org" } },
+        { "range": { "sent": { "gte": "2015-06-30T00:00:00Z" } } }
+      ]
+    }
+  }
+}
+
+# Search - count emails, grouped by sender
+POST /emails/email/_search
+{
+  "aggs": {
+    "count_by_sender": {
+      "terms": { "field": "from" }
+    }
+  }
+}
+
+# ---------------
+
+# Clean up
+DELETE /emails
+
+# Verify
+GET /emails
+
+# Re-create index
+POST /emails
+{
+  "mappings": {
+    "email": {
+      "properties": {
+        "from": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "to": {
+          "type": "string",
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}

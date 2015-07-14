@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Elasticsearch for SQL users</title>
+
+    <meta name="description" content="Elasticsearch concepts and queries for those who come from a relational/SQL background">
+    <meta name="author" content="Shaunak Kashyap">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/moon.css" id="theme">
+    <link rel="stylesheet" href="css/override.css">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h2>Elasticsearch for SQL users</h2>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a></small>
+          </p>
+        </section>
+
+        <section>
+          <section>
+            <h2>Why use Elasticsearch?</h2>
+          </section>
+          <section>
+            <p>Full text search</p>
+            <p><img src="images/wikipedia.png" /></p>
+          </section>
+          <section>
+            <p>Structured search</p>
+            <p><img src="images/github.png" /></p>
+          </section>
+          <section>
+            <p>Faceted navigation</p>
+            <p><img src="images/kayak.png" width="25%" /></p>
+          </section>
+          <section>
+            <p>Analytics</p>
+            <p><img src="images/kibana.png" /></p>
+          </section>
+        </section>
+
+        <section>
+          <h2>But&hellip; what is it?</h2>
+          <em>
+            Elasticsearch is a
+            <span class="fragment highlight-current-blue" data-fragment-index="2">distributed</span>,
+            <span class="fragment highlight-current-blue" data-fragment-index="6">open source</span>
+            <span class="fragment highlight-current-blue" data-fragment-index="1">search and analytics engine</span>, designed for
+            <span class="fragment highlight-current-blue" data-fragment-index="3">horizontal scalability</span>,
+            <span class="fragment highlight-current-blue" data-fragment-index="4">reliability</span>, and
+            <span class="fragment highlight-current-blue" data-fragment-index="5">easy management</span>
+          </em>
+        </section>
+
+        <section>
+          <h2>Concepts</h2>
+          <dl>
+            <div class="fragment">
+              <dt>Document</dt>
+              <dd>The unit of data fed into Elasticsearch, in JSON format</dd>
+              <pre><code data-trim>
+{
+  "from": "tony@stark.com",
+  "to": "hulk@avengers.org",
+  "subject": "Scepter gem -> Ultron - WDYT??",
+  "body": "Hey green guy, so I have this idea..."
+}
+              </code></pre>
+            </div>
+            <div class="fragment">
+              <dt>Index</dt>
+              <dd>A collection of documents stored in Elasticsearch</dd>
+            </div>
+            <div class="fragment">
+              <dt>Type</dt>
+              <dd>The category of the document within an index</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section>
+          <h2>Concepts &mdash; Comparison</h2>
+          <table>
+            <thead>
+              <th>RDBMS</th>
+              <th>Elasticsearch</th>
+              <th>Example</th>
+            </thead>
+            <tbody>
+              <tr class="fragment">
+                <td>Database</td>
+                <td>Index</td>
+                <td><code>emails</code></td>
+              </tr>
+              <tr class="fragment">
+                <td>Table</td>
+                <td>Type</td>
+                <td><code>messages</code></td>
+              </tr>
+              <tr class="fragment">
+                <td>Row</td>
+                <td>Document</td>
+                <td>(an email message)</td>
+              </tr>
+              <tr class="fragment">
+                <td>Column <em>aka</em> Field</td>
+                <td>Field</td>
+                <td><code>sender</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+
+          <section>
+            <h3>Create an email</h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+INSERT INTO emails.messages (
+  sender,
+  recipient,
+  subject,
+  body
+) VALUES (
+  "tony@stark.com",
+  "hulk@avengers.org",
+  "Scepter gem -> Ultron - WDYT??",
+  "Hey green guy, so I have this idea..."
+);
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code class="http" data-trim>
+curl -X POST http://localhost:9200/emails/messages -d '
+{
+  "sender": "tony@stark.com",
+  "recipient": "hulk@avengers.org",
+  "subject": "Scepter gem -> Ultron - WDYT??",
+  "body": "Hey green guy, so I have this idea..."
+}
+'
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Retrieve an email</h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT *
+FROM   emails.messages
+WHERE  id = :id
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X GET http://localhost:9200/emails/messages/:id
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Update an email</h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+UPDATE emails.messages
+SET    subject = "Top Secret - Call me!!!"
+WHERE  id = :id
+            </code></pre>
+            <div class="fragment">
+            <h4>Elasticsearch &mdash; option 1</em></h4>
+            <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/messages/:id/_update
+{
+  "doc": {
+    "subject": "Top Secret - Call me!!!"
+  }
+}
+            </code></pre>
+          </div>
+          <div class="fragment">
+            <h4>Elasticsearch &mdash; option 2</h4>
+            <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/messages/:id/_update
+{
+  "script": "ctx._source.subject = 'Top Secret - Call me!!!'"
+}
+            </code></pre>
+          </div>
+          </section>
+
+          <section>
+            <h3>Delete an email</h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+DELETE
+FROM   emails.messages
+WHERE  id = :id
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X DELETE http://localhost:9200/emails/messages/:id
+              </code></pre>
+            </div>
+          </section>
+
+        </section>
+
+        <section>
+          <img src="images/bored-cat.jpg" />
+        </section>
+
+        <section>
+
+          <section>
+          <h3>Search for a <em>single</em> &nbsp;term in a <em>single</em> &nbsp;field</em></h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT *
+FROM   emails
+WHERE  body LIKE "% have %";
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/messages/_search
+{
+  "query": {
+    "match": {
+      "body": "have"
+    }
+  }
+}
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+          <h3>Search for a <em>multiple</em> &nbsp;terms in a <em>single</em> &nbsp;field</em></h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT *
+FROM   emails
+WHERE  body LIKE "% green %"
+OR     body LIKE "% idea %";
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/messages/_search
+{
+  "query": {
+    "match": {
+      "body": "green idea"
+    }
+  }
+}
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+          <h3>Search for a <em>phrase</em> &nbsp;in a single field</em></h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT *
+FROM   emails
+WHERE  body LIKE "% have this idea %";
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/messages/_search
+{
+  "query": {
+    "match_phrase": {
+      "body": "have this idea"
+    }
+  }
+}
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+          <h3>Search <em>sloppily</em> &nbsp;for a phrase in a single field</em></h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT *
+FROM   emails
+WHERE  body LIKE "% have % idea %";
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/messages/_search
+{
+  "query": {
+    "match_phrase": {
+      "body": {
+        "query": "have idea",
+        "slop": 1
+      }
+    }
+  }
+}
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Search for terms across <em>multiple</em> &nbsp;fields</em></h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT *
+FROM   emails
+WHERE  subject LIKE "% ultron %"
+OR     subject LIKE "% idea %"
+OR     body LIKE "% ultron %"
+OR     body LIKE "% idea %";
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/messages/_search
+{
+  "query": {
+    "multi_match": {
+      "fields": [ "subject", "body"],
+      "query": "ultron idea"
+    }
+  }
+}
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Search for terms across <em>all</em> &nbsp;fields</em></h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT *
+FROM   emails
+WHERE  sender LIKE "%hulk%"
+OR     sender LIKE "%ultron%"
+OR     recipient LIKE "%hulk%"
+OR     recipient LIKE "%ultron%"
+OR     subject LIKE "% hulk %"
+OR     subject LIKE "% ultron %"
+OR     body LIKE "% hulk %"
+OR     body LIKE "% ultron %";
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X POST http://localhost:9200/emails/messages/_search
+{
+  "query": {
+    "match": {
+      "_all": "hulk ultron"
+    }
+  }
+}
+              </code></pre>
+            </div>
+          </section>
+
+
+          <section>
+          <h3>Search for an exact match (field = value)</em></h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT *
+FROM   census.people
+WHERE  city = "San Francisco";
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch &mdash; term query</h4>
+              <pre><code data-trim>
+curl -X POST http://localhost:9200/census/people/_search
+{
+  "query": {
+    "term": { "city": "San Francisco" }
+  }
+}
+              </code></pre>
+            </div>
+          <div class="fragment">
+            <h4>Elasticsearch &mdash; term filter</h4>
+            <pre><code data-trim>
+curl -X POST http://localhost:9200/census/people/_search
+{
+  "query": {
+    "filtered": {
+      "filter": {
+        "term": { "city": "San Francisco" }
+      }
+    }
+  }
+}
+            </code></pre>
+          </div>          </section>
+
+          <section>
+          <h3>Aggregations</em></h3>
+            <h4>SQL</h4>
+            <pre><code class="sql" data-trim>
+SELECT   city, gender, AVG(age)
+FROM     census.people
+GROUP BY city, gender;
+            </code></pre>
+            <div class="fragment">
+              <h4>Elasticsearch</h4>
+              <pre><code data-trim>
+curl -X POST http://localhost:9200/census/people/_search
+{
+  "aggregations": {
+    "by_city": {
+      "terms": {
+        "field": "city"
+      },
+      "aggregations": {
+        "by_gender": {
+          "terms": {
+            "field": "gender"
+          },
+          "aggregations": {
+            "average_age": {
+              "avg": {
+                "field": "age"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+              </code></pre>
+            </div>
+          </section>
+
+        </section>
+
+        <section>
+          <h2>Thank You</h2>
+          <p>https://discuss.elastic.co/</p>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
