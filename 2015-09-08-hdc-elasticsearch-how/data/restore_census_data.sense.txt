@@ -1,0 +1,24 @@
+# Note: replace "/tmp/es_backups" with folder specified in "path.repo" setting in $ES_HOME/config/elasticsearch.yml
+
+# Create the repo for the snapshot
+PUT _snapshot/census_data
+{
+  "type": "fs",
+  "settings": {
+    "location": "/tmp/es_backups/census_data",
+    "compress": true
+  }
+}
+
+# Copy and unzip file
+# cp census_data.zip /tmp/es_backups
+# cd /tmp/es_backups
+# unzip census_data.zip
+# rm census_data.zip
+
+# Do the restore
+POST /_snapshot/census_data/snapshot_1/_restore
+
+# Verify
+GET census
+GET census/_count    # Should show 250759 as the count

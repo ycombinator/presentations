@@ -1,0 +1,24 @@
+# Note: replace "/tmp/es_backups" with folder specified in "path.repo" setting in $ES_HOME/config/elasticsearch.yml
+
+# Create the repo for the snapshot
+PUT _snapshot/twitter_data
+{
+  "type": "fs",
+  "settings": {
+    "location": "/tmp/es_backups/twitter_data",
+    "compress": true
+  }
+}
+
+# Copy and unzip file
+# cp twitter_data.zip /tmp/es_backups
+# cd /tmp/es_backups
+# unzip twitter_data.zip
+# rm twitter_data.zip
+
+# Do the restore
+POST /_snapshot/twitter_data/snapshot_1/_restore
+
+# Verify
+GET twitter
+GET twitter/_count    # Should show 2643 as the count
