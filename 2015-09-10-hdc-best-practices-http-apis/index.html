@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Best Practices for building HTTP APIs</title>
+
+    <meta name="description" content="Tips and tricks in HTTP API design">
+    <meta name="author" content="Shaunak Kashyap">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/sky.css" id="theme">
+    <link rel="stylesheet" href="css/override.css">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h3>Best Practices for</h3>
+          <h2>Building HTTP APIs</h2>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a></small>
+          </p>
+        </section>
+
+        <section>
+          <h2>Why Me?</h2>
+          <ul>
+            <li class="fragment"><strong>2007</strong>: Yahoo! Tech &mdash; first SOA property within Yahoo!</li>
+            <li class="fragment"><strong>2009</strong>: Yahoo! News &mdash; backend tech lead</li>
+            <li class="fragment"><strong>2010</strong>: <i>RESTful Web Services Cookbook</i> &mdash; peer reviewer</li>
+            <li class="fragment"><strong>2010</strong>: Netflix API team &mdash; senior software engineer</li>
+            <li class="fragment"><strong>2011</strong>: Skybox Imaging &mdash; team lead for ground systems</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>JSON vs. XML</h2>
+          <h4>(Spoiler alert: Use JSON!)</h4>
+          <ul>
+            <li class="fragment">Human-readable</li>
+            <li class="fragment">Succint</li>
+            <li class="fragment">Built-in data types</li>
+            <li class="fragment">No namespaces!</li>
+        </section>
+
+        <section>
+          <h2><code>POST</code> vs. <code>PUT</code></h2>
+          <ul>
+            <li class="fragment">Creation: Does the client know the ID before creation?
+              <ul>
+                <li class="fragment">Yes: Use <code>PUT</code><pre><code class="nohighlight">PUT /collection/{resource-id}</code></pre></li>
+                <li class="fragment">No: Use <code>POST</code><pre><code class="nohighlight">POST /collection</code></pre></li>
+              </ul>
+            </li>
+            <li class="fragment">Updates: Use <code>PUT</code></li>
+            <li class="fragment">For misc. unsafe, non-idempotent operations: Use <code>POST</code></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2><code>201 Created</code> vs. <code>202 Accepted</code></h2>
+          <ul>
+            <li class="fragment">For synchronous creation, use <code>201 Created</code></li>
+            <li class="fragment">
+              For asynchronous operations,
+              <ul>
+                <li>Use <code>202 Accepted</code></li>
+                <li class="fragment">Clients can poll for status or be notified by server</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Use <code>204 No Content</code></h2>
+          <ul>
+            <li class="fragment">Responses from <code>DELETE</code> requests</li>
+            <li class="fragment">Responses from <code>HEAD</code> requests</li>
+        </section>
+
+        <section>
+          <h2>API Evolution</h2>
+          <ul>
+            <li class="fragment">Keep the interface minimal</li>
+            <li class="fragment">Make changes backwards-compatible</li>
+            <li class="fragment">Think about forwards compatibility</li>
+            <li class="fragment">Use (major) versioning sparingly</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Partial Updates</h2>
+          <section>
+            <pre><code data-trim>
+GET /some/resource
+            </code></pre>
+            <pre><code data-trim class="javascript">
+{
+  "foo": "bar",
+  "baz": "qux",
+  // ... a dozen more properties with TONS of data ...
+}
+            </code></pre>
+
+            <div class="fragment">&darr;</div>
+
+            <pre class="fragment"><code data-trim class="javascript">
+{
+  "foo": "bar",
+  "baz": [ "boo" ],
+  // ... a dozen more properties with TONS of data ...,
+  "hello": "world"
+}
+            </code></pre>
+          </section>
+
+          <section>
+            <p>JSON-Patch: <a href="http://jsonpatch.com/">http://jsonpatch.com/</a> (RFC 6902)</p>
+            <div class="fragment">
+              <pre><code data-trim class="javascript">
+GET /some/resource
+              </code></pre>
+              <pre><code data-trim>
+{
+  "foo": "bar",
+  "baz": "qux",
+  // ... a dozen more properties with TONS of data ...
+}
+              </code></pre>
+            </div>
+            <pre class="fragment"><code data-trim class="javascript">
+PATCH /some/resource
+Content-Type: application/json-patch+json
+[
+  { "op": "replace", "path": "/baz", "value": [ "boo" ] },
+  { "op": "add", "path": "/hello", "value": "world" }
+]
+
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+GET /some/resource
+            </code></pre>
+            <pre><code data-trim class="javascript">
+{
+  "foo": "bar",
+  "baz": [ "boo" ],
+  // ... a dozen more properties with TONS of data ...,
+  "hello": "world"
+}
+            </code></pre>
+
+            <p class="fragment">JSON-Patch has libraries in several languages:<br /><a href="http://jsonpatch.com/#libraries">http://jsonpatch.com/#libraries</a></p>
+          </section>
+
+        </section>
+
+
+        <section>
+          <h2>Caching</h2>
+          <ul>
+            <li class="fragment">HTTP caching proxies
+              <ul>
+                <li>Varnish: <a href="https://www.varnish-cache.org/">www.varnish-cache.org</a></li>
+                <li>Squid: <a href="http://www.squid-cache.org/">www.squid-cache.org</a></li>
+                <li>Apache Traffic Server: <a href="http://trafficserver.apache.org/">trafficserver.apache.org</a></li>
+              </ul>
+            </li>
+            <li class="fragment">Use the <code>Cache-Control</code> header...<pre><code class="nohighlight">Cache-Control: max-age=3600</code></pre></li>
+            <li class="fragment">... with the <code>stale-while-revalidate</code> directive<pre><code class="nohighlight">Cache-Control: max-age=3600; stale-while-revalidate=30</code></pre></li>
+            <li class="fragment">Keep your API resources atomic</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>HATEOAS</h2>
+          <ul>
+            <li>Link relations in JSON<span class="fragment"> &mdash; <a href="http://stateless.co/hal_specification.html">HAL</a></span></li>
+            <li class="fragment">Webhooks</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Concurrency</h2>
+          <ul>
+            <li class="fragment"><code>ETag</code><span class="fragment"> &amp; <code>If-Match</code> headers</span></li>
+            <li class="fragment"><code>Last-Modified</code> &amp; <code>If-Unmodified-Since</code> headers</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Home Document</h2>
+          <div class="fragment">
+            <h3>JSON Home</h3>
+            <p><a href="http://tools.ietf.org/html/draft-nottingham-json-home-02">http://tools.ietf.org/html/draft-nottingham-json-home-02</a></p>
+          </div>
+        </section>
+
+        <section>
+          <h1>Questions?</h1>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a></small>
+          </p>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
