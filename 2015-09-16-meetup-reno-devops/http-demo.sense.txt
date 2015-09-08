@@ -113,6 +113,34 @@ POST twitter/_search?search_type=count
   }
 }
 
+# Aggregate top 5 terms in tweets, per year
+# for tweets that mention "devops"
+# without search results
+POST twitter/_search?search_type=count
+{
+  "query": {
+    "match": {
+      "message": "devops"
+    }
+  },
+  "aggregations": {
+    "by_year": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "year"
+      },
+      "aggregations": {
+        "top_ten_terms": {
+          "terms": {
+            "field": "message",
+            "size": 5
+          }
+        }
+      }
+    }
+  }
+}
+
 
 ##
 ## Demo ends here
