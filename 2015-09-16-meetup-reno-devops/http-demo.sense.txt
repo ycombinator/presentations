@@ -1,0 +1,143 @@
+##
+## Demo starts here
+##
+
+# Index a tweet
+PUT /twitter/tweet/311335361169195009
+{
+  "message": "In startup we are practice Outage Driven Infrastructure.",
+  "@timestamp": "2013-03-12T04:38:29.000Z"
+}
+
+# Retrieve just-indexed tweet
+GET /twitter/tweet/311335361169195009
+
+# Get count of tweets indexed
+GET twitter/_count
+
+# Search for tweets with the
+# word (aka term) "devops" in them
+GET twitter/_search?q=devops
+
+# Same query, done using query DSL
+POST twitter/_search
+{
+  "query": {
+    "match": {
+      "_all": "devops"
+    }
+  }
+}
+
+# Search for multiple terms (OR match)
+POST twitter/_search
+{
+  "query": {
+    "match": {
+      "_all": "expert devops"
+    }
+  }
+}
+
+# Search for multiple terms (AND match)
+POST twitter/_search
+{
+  "query": {
+    "match": {
+      "_all": {
+        "query": "expert devops",
+        "operator": "and"
+      }
+    }
+  }
+}
+
+# Search for phrase
+POST twitter/_search
+{
+  "query": {
+    "match_phrase": {
+      "_all": "expert devops"
+    }
+  }
+}
+
+# But text search isn't all that Elasticsearch can do...
+
+# Aggregate top 5 terms in tweets
+POST twitter/_search
+{
+  "aggregations": {
+    "top_ten_terms": {
+      "terms": {
+        "field": "message",
+        "size": 5
+      }
+    }
+  }
+}
+
+# Aggregate top 5 terms in tweets,
+# without search results
+POST twitter/_search?search_type=count
+{
+  "aggregations": {
+    "top_ten_terms": {
+      "terms": {
+        "field": "message",
+        "size": 5
+      }
+    }
+  }
+}
+
+# Aggregate top 5 terms in tweets, per year
+# without search results
+POST twitter/_search?search_type=count
+{
+  "aggregations": {
+    "by_year": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "year"
+      },
+      "aggregations": {
+        "top_ten_terms": {
+          "terms": {
+            "field": "message",
+            "size": 5
+          }
+        }
+      }
+    }
+  }
+}
+
+
+##
+## Demo ends here
+##
+
+##
+## Cleanup/initialization
+##
+
+DELETE twitter
+
+PUT twitter
+{
+  "mappings": {
+    "tweet": {
+      "properties": {
+        "message": {
+          "type": "string",
+          "analyzer": "english"
+        }
+      }
+    }
+  }
+}
+
+GET twitter
+
+DELETE twitter/tweet/311335361169195009
