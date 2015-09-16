@@ -1,0 +1,17 @@
+.reveal h3 {
+  font-size: 1.4em;
+}
+
+.reveal section img {
+  border-style: none;
+  border-width: 0px;
+}
+
+.reveal section img {
+  background: none;
+  box-shadow: none;
+}
+
+.reveal code {
+  font-size: 0.8em;
+}

@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Analyzing Time-Series Data with Elasticsearch, Logstash, and Kibana</title>
+
+    <meta name="description" content="Analyzing Time-Series Data with Elasticsearch, Logstash, and Kibana">
+    <meta name="author" content="Shaunak Kashyap">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/sky.css" id="theme">
+    <link rel="stylesheet" href="css/override.css">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h3>Analyzing Time-Series Data</h3>
+          <h4>with <strong>Elasticsearch</strong>, <strong>Logstash</strong>, and <strong>Kibana</strong></h4>
+          <p>&nbsp;</p>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a> &bull; Developer Advocate at <a href="https://www.elastic.co">Elastic</a></small>
+          </p>
+        </section>
+
+        <section>
+          <section>
+            <h2>What's the Problem?</h2>
+          </section>
+          <section>
+            <h3>Going from this</h3>
+            <img src="images/apache-logs.png" />
+          </section>
+          <section>
+            <h3>to this</h3>
+            <img src="images/kibana-http.png" />
+          </section>
+        </section>
+
+        <section>
+          <h2>What's in our toolkit?</h2>
+          <img src="images/elasticsearch-logo.png" class="fragment" />
+          <img src="images/logstash-logo.png" width="25%" style="margin-left: 2em; margin-right: 2em;" class="fragment" />
+          <img src="images/kibana-logo.png" style="margin-bottom: 2em;" class="fragment" />
+        </section>
+
+        <section>
+          <h2>Basic architecture</h2>
+          <img src="images/apache-logs.png" width="22%" class="fragment" data-fragment-index="1" />
+          <img src="images/left-arrow.png" width="2%" class="fragment" style="margin-bottom: 1.75em;" data-fragment-index="3" />
+          <img src="images/logstash-logo.png" width="22%" class="fragment" style="margin-bottom: 0em;" data-fragment-index="2" />
+          <img src="images/right-arrow.png" width="2%" class="fragment" style="margin-bottom: 1.75em;" data-fragment-index="4" />
+          <img src="images/elasticsearch-logo.png" width="18%" class="fragment" style="margin-left: 0.25em; margin-right: 0.25em;" data-fragment-index="5" />
+          <img src="images/left-arrow.png" width="2%" class="fragment" style="margin-bottom: 1.75em;" data-fragment-index="7" />
+          <img src="images/kibana-logo.png" width="18%" class="fragment" style="margin-bottom: 1.75em; margin-left: 0.5em" data-fragment-index="6" />
+        </section>
+
+        <section>
+          <h2>Logstash</h2>
+          <section>
+            <h3>Plugin-Based</h3>
+            <h3>Event Processing Pipeline</h3>
+          </section>
+          <section>
+            <h3>The Pipeline</h3>
+            <pre><code data-trim>$ cat logstash-apache.conf</code></pre>
+            <pre><code data-trim>
+input {
+  ...
+}
+
+filter {
+  ...
+}
+
+output {
+  ...
+}
+            </code></pre>
+            <pre class="fragment"><code>$ logstash --config logstash-apache.conf</code></pre>
+          </section>
+          <section>
+            <h4>Sample Configuration File</h4>
+            <pre><code data-trim>
+input {
+  file {
+    path => "/var/log/apache/access.log"
+  }
+}
+
+filter {
+  grok {
+    match => [ "message", "%{IP:client} %{WORD:method} %{URIPATHPARAM:request} %{NUMBER:bytes:int} %{NUMBER:duration}" ]
+  }
+  geoip {
+    source => "client"
+  }
+}
+
+output {
+  elasticsearch {
+    host => "192.168.0.23"
+  }
+}
+            </code></pre>
+          </section>
+          <section>
+            <div class="fragment">
+              <h4>Input Plugins</h4>
+              <span class="fragment">
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-inputs-file.html">file</a></code>
+              </span>
+              <span class="fragment">,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-inputs-syslog.html">syslog</a></code>
+              </span>
+              <span class="fragment">,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-inputs-eventlog.html">eventlog</a></code>
+              </span>
+              <span class="fragment">,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-inputs-irc.html">irc</a></code>,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-inputs-twitter.html">twitter</a></code>
+              </span>
+              <span class="fragment">,
+                <a href="https://www.elastic.co/guide/en/logstash/current/input-plugins.html">&hellip;</a>
+              </span>
+            </div>
+            <br />
+            <div class="fragment">
+              <h4>Filter Plugins</h4>
+              <span class="fragment">
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-filters-grok.html">grok</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-filters-geoip.html">geoip</a></code>
+              </span>
+              <span class="fragment">,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-filters-anonymize.html">anonymize</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-filters-mutate.html">mutate</a></code>
+              </span>
+              <span class="fragment">,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-filters-json.html">json</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-filters-csv.html">csv</a></code>
+              </span>
+              <span class="fragment">,
+                <a href="https://www.elastic.co/guide/en/logstash/current/filter-plugins.html">&hellip;</a>
+              </span>
+            </div>
+            <br />
+            <div class="fragment">
+              <h4>Output Plugins</h4>
+              <span class="fragment">
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-elasticsearch.html">elasticsearch</a></code>
+              </span>
+              <span class="fragment">,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-email.html">email</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-nagios.html">nagios</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-pagerduty.html">pagerduty</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-hipchat.html">hipchat</a></code>
+              </span>
+              <span class="fragment">,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-zeromq.html">zeromq</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-rabbitmq.html">rabbitmq</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-sqs.html">sqs</a></code> ,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-redis.html">redis</a></code>
+              </span>
+              <span class="fragment">,
+                <code><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-http.html">http</a></code>
+              </span>
+              <span class="fragment">,
+                <a href="https://www.elastic.co/guide/en/logstash/current/output-plugins.html">&hellip;</a>
+              </span>
+          </section>
+        </section>
+
+        <section>
+          <h2>Elasticsearch</h2>
+          <section>
+            <ul>
+              <li class="fragment">Search and Analytics engine</li>
+              <li class="fragment">Supports fast full-text, structured, and aggregations queries</li>
+              <li class="fragment">Distributed architecture</li>
+              <li class="fragment">Has HTTP/RESTful API</li>
+            </ul>
+          </section>
+          <section>
+            <ul>
+              <li class="fragment">Stores data as documents</li>
+              <li class="fragment">Accepts documents as JSON</li>
+              <li class="fragment">1 Logstash event = 1 Elasticsearch document</li>
+              <pre class="fragment"><code data-trim>
+{
+  "@timestamp": "2015-09-17T01:04:32Z",
+  "client": "234.56.78.90",
+  "method": "GET",
+  "request": "/index.html",
+  "bytes": 98412,
+  "duration": 231
+}
+              </code></pre>
+            </ul>
+          </section>
+          <section>
+            <ul>
+              <li class="fragment">Documents are stored in user-defined indices</li>
+              <li class="fragment">Default indices created by Logstash are named <code>logstash-<em>YYYY.MM.DD</em></code></li>
+              <li class="fragment">Can accept documents one-by-one or in bulk</li>
+              <li class="fragment">Logstash uses bulk API</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <h2>Kibana</h2>
+          <section>
+            <img src="images/kibana-1.png" />
+          </section>
+          <section>
+            <img src="images/kibana-2.png" />
+          </section>
+          <section>
+            <img src="images/kibana-3.png" />
+            <img src="images/kibana-4.png" class="fragment" />
+          </section>
+          <section>
+            <img src="images/kibana-5.png" />
+          </section>
+        </section>
+
+        <section>
+          <h2>Deployment Patterns</h2>
+          <section>
+            <h4>Basic &mdash; One Machine</h4>
+            <img src="images/deployment-1.png" />
+          </section>
+          <section>
+            <h4>Basic &mdash; Multiple Machines</h4>
+            <img src="images/deployment-2.png" />
+          </section>
+          <section>
+            <h4>Two Tiers &mdash; Shippers and Transformers</h4>
+            <img src="images/deployment-3.png" />
+          </section>
+        </section>
+
+        <section>
+          <h2>Beats</h2>
+          <h4>Data Shippers for Elasticsearch</h4>
+          <ul>
+            <li class="fragment"><a href="https://github.com/elastic/packetbeat">Packetbeat</a> &mdash; <em>for network packet analysis</em></li>
+            <li class="fragment"><a href="https://github.com/elastic/topbeat">Topbeat</a> &mdash; <em>for system metrics analysis</em></li>
+            <li class="fragment"><a href="https://github.com/elastic/filebeat">Filebeat</a> &mdash; <em>future replacement for</em> logstash-forwarder</li>
+            <li class="fragment">BYOBeat &mdash; <a href="https://www.elastic.co/guide/en/beats/libbeat/current/index.html"><em>developer guide: creating a new Beat</em></a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Summary</h2>
+          <h4 class="fragment">Elasticsearch, Logstash, and Kibana</h4>
+          <h4 class="fragment">Deployment Patterns</h4>
+          <h4 class="fragment">Beats</h4>
+        </section>
+
+        <section>
+          <h2>Questions?</h2>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a></small>
+          </p>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
