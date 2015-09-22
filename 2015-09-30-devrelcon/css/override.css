@@ -1,0 +1,33 @@
+.reveal h3 {
+  font-size: 1.4em;
+}
+
+.reveal section img {
+  border-style: none;
+  border-width: 0px;
+}
+
+.reveal section img {
+  background: none;
+  box-shadow: none;
+}
+
+.reveal code {
+  font-size: 0.8em;
+}
+
+.reveal section .panel {
+  background-color: #fff;
+  float: left;
+  width: 30%;
+  height: 6em;
+  margin-left: 0.5em;
+  border-radius: 0.4em;
+  padding-bottom: 1em;
+}
+
+.reveal section .panel img {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}

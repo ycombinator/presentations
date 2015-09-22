@@ -1,0 +1,136 @@
+##
+## Initialization
+##
+
+# Cleanup tickets, watches, and watch history
+DELETE tickets
+DELETE _watcher/watch/omg_sev1_spike
+DELETE .watch_history*
+
+# Enable _timestamp on tickets/ticket index/type
+PUT tickets
+{
+  "mappings": {
+    "ticket": {
+      "_timestamp": { "enabled": true }
+    }
+  }
+}
+
+##
+## Actual demo starts here...
+##
+
+
+
+# Verify that Watcher plugin is installed and running
+GET _watcher/stats
+
+# Index a sample document - a SEV-1 ticket
+POST tickets/ticket
+{
+  "title": "This host is on fire ♫",
+  "description": "...",
+  "severity": 1
+}
+
+# Verify that document was indexed
+GET tickets/_search
+
+# Create watch - alert if more than 3 SEV-1s in 30 minutes
+PUT _watcher/watch/omg_sev1_spike
+{
+  "trigger": {
+    "schedule": {
+      "interval": "5s"
+    }
+  },
+  "input": {
+    "search": {
+      "request": {
+        "indices": [ "tickets" ],
+        "types": [ "ticket" ],
+        "body": {
+          "query": {
+            "filtered": {
+              "filter": {
+                "and": [
+                  { "term": { "severity": 1 } },
+                  { "range": { "_timestamp": { "gte": "now-30m" } } }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "condition": {
+    "compare": {
+      "ctx.payload.hits.total": { "gte": 3 }
+    }
+  },
+  "actions": {
+    "email_ze_boss": {
+      "email": {
+        "to": "ycombinator@gmail.com",
+        "subject": "Brace for impact!",
+        "body": "Ruh roh! We've had {{ ctx.payload.hits.total }} SEV-1s in the past 30 minutes."
+      },
+      "throttle_period": "1h"
+    }
+  }
+}
+
+# Verify that watch was created
+GET _watcher/watch/omg_sev1_spike
+
+# Verify that watch is being triggered per schedule
+POST .watch_history*/_search
+{
+  "query": {
+    "filtered": {
+      "filter": {
+        "term": {
+          "watch_id": "omg_sev1_spike"
+        }
+      }
+    }
+  },
+  "sort": [
+    { "trigger_event.triggered_time": { "order": "desc" } }
+  ]
+}
+
+# Now index another SEV-1 ticket
+POST tickets/ticket
+{
+  "title": "♪ Another one bites the dust ♫",
+  "description": "...",
+  "severity": 1
+}
+
+# And another one (this should trigger the watch action!)
+POST tickets/ticket
+{
+  "title": "♬ And another one gone ♪",
+  "description": "...",
+  "severity": 1
+}
+
+# Check if watch was *executed* this time (and later throttled)
+POST .watch_history*/_search
+{
+  "query": {
+    "filtered": {
+      "filter": {
+        "term": {
+          "watch_id": "omg_sev1_spike"
+        }
+      }
+    }
+  },
+  "sort": [
+    { "trigger_event.triggered_time": { "order": "desc" } }
+  ]
+}
