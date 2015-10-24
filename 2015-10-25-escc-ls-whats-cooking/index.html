@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Logstash, What's Cooking?</title>
+
+    <meta name="description" content="Logstash, What's Cooking?">
+    <meta name="author" content="Shaunak Kashyap">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/sky.css" id="theme">
+    <link rel="stylesheet" href="css/override.css">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h2>Logstash,</h2>
+          <h3>What's Cooking?</h3>
+          <p>&nbsp;</p>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a> &bull; Developer Advocate at <a href="https://www.elastic.co">Elastic</a></small>
+          </p>
+        </section>
+
+        <section>
+          <h2>Recap</h2>
+
+          <section>
+            <h3>Basic Setup</h3>
+            <img src="images/server.png" width="30%" class="fragment" />
+            <img src="images/logstash-icon.png" width="10%" style="margin-left: -4em; margin-top: 3.5em;" class="fragment" />
+            <img src="images/right-arrow.png" width="10%" style="margin-left: 1.4em;" class="fragment" />
+            <img src="images/elasticsearch-icon.png" width="35%" style="margin-left: -1em; margin-top: -1em;" class="fragment" />
+          </section>
+
+          <section>
+            <h3>Configuration</h3>
+            <pre><code data-trim>
+input {
+  ... // file, syslog, twitter, etc.
+}
+
+filter {
+  ... // grok, csv, geoip, etc.
+}
+
+output {
+  ... // elasticsearch, etc.
+}
+            </code></pre>
+          </section>
+
+        </section>
+
+        <section>
+          <h2>So... what's cooking?</h2>
+          <div class="panel fragment">
+            <img src="images/resiliency.png" />
+            <h4>Resiliency</h4>
+          </div>
+          <div class="panel fragment">
+            <img src="images/manageability.png" />
+            <h4>Manageability</h4>
+          </div>
+          <div class="panel fragment">
+            <img src="images/filebeat.png" />
+            <h4>Filebeat</h4>
+          </div>
+        </section>
+
+        <section>
+          <h3>Resiliency: Surviving Restarts</h3>
+
+          <section>
+            <h4>Today</h4>
+            <pre><code>input { ... }</code></pre>
+            <img src="images/queue.png" width="10%" />
+            <span style="font-size: 0.5em">capacity = 20 items</span>
+            <pre><code>filter { ... }</code></pre>
+            <img src="images/queue.png" width="10%" />
+            <span style="font-size: 0.5em">capacity = 20 items</span>
+            <pre><code>output { ... }</code></pre>
+          </section>
+
+          <section>
+            <h4>Future</h4>
+            <pre><code>input { ... }</code></pre>
+            <img src="images/queue.png" width="10%" />
+            <img id="disk" src="images/disk.png" />
+            <span style="font-size: 0.5em">capacity = user-defined</span>
+            <pre><code>filter { ... }</code></pre>
+            <img src="images/queue.png" width="10%" />
+            <img id="disk" src="images/disk.png" />
+            <span style="font-size: 0.5em">capacity = user-defined</span>
+            <pre><code>output { ... }</code></pre>
+          </section>
+
+        </section>
+
+        <section>
+          <h3>Resiliency: Handling Failed Events</h3>
+
+          <section>
+            <h4>Today</h4>
+            <img src="images/plugin.png" width="20%" />
+            <span style="font-size: 2em;">+</span>
+            <img src="images/failure.png" width="20%" />
+            <span style="font-size: 2em;">=</span>
+            <img src="images/grumpy.png" width="20%" />
+          </section>
+
+          <section>
+            <h4>Future</h4>
+            <img src="images/plugin.png" width="20%" />
+            <span style="font-size: 2em;">+</span>
+            <img src="images/failure.png" width="20%" />
+            <span style="font-size: 2em;">=</span>
+            <img src="images/queue.png" width="20%" />
+            <img src="images/disk.png" style="width: 10%; margin-left: -2.7em; margin-top: 3.5em; background-color: #fff; opacity: 0.8;" />
+          </section>
+
+        </section>
+
+        <section>
+          <h3>Manageability: Updating Config</h3>
+
+          <section>
+            <h4>Today</h4>
+            <div class="fragment" data-fragment-index="1">
+              <img src="images/server.png" width="15%" />
+              <img src="images/logstash-icon.png" width="5%" style="margin-left: -2em; margin-top: 1.75em;" />
+            </div>
+            <span class="fragment" data-fragment-index="4" style="position: absolute; margin-top: -5em; margin-left: 6em; font-size:0.75em; width: 3em">
+              <pre><code data-trim>
+input {
+  ...
+}
+
+...
+              </code></pre>
+            </span>
+            <div class="fragment" data-fragment-index="2">
+              <img src="images/server.png" width="15%" />
+              <img src="images/logstash-icon.png" width="5%" style="margin-left: -2em; margin-top: 1.75em;" />
+            </div>
+            <span class="fragment" data-fragment-index="5" style="position: absolute; margin-top: -5em; margin-left: 6em; font-size:0.75em; width: 3em">
+              <pre><code data-trim>
+input {
+  ...
+}
+
+...
+              </code></pre>
+            </span>
+            <div class="fragment" data-fragment-index="3">
+              <p>&hellip;</p>
+              <img src="images/server.png" width="15%" />
+              <img src="images/logstash-icon.png" width="5%" style="margin-left: -2em; margin-top: 1.75em;" />
+            </div>
+            <span class="fragment" data-fragment-index="6" style="position: absolute; margin-top: -5em; margin-left: 6em; font-size:0.75em; width: 3em">
+              <pre><code data-trim>
+input {
+  ...
+}
+
+...
+              </code></pre>
+            </span>
+          </section>
+
+          <section>
+            <h4>Future</h4>
+            <div>
+              <img src="images/server.png" width="15%" />
+              <img src="images/logstash-icon.png" width="5%" style="margin-left: -2em; margin-top: 1.75em;" />
+            </div>
+            <div>
+              <img src="images/server.png" width="15%" />
+              <img src="images/logstash-icon.png" width="5%" style="margin-left: -2em; margin-top: 1.75em;" />
+            </div>
+            <div>
+              <p>&hellip;</p>
+              <img src="images/server.png" width="15%" />
+              <img src="images/logstash-icon.png" width="5%" style="margin-left: -2em; margin-top: 1.75em;" />
+            </div>
+            <span class="fragment" style="position: absolute; margin-top: -7em; margin-left: -7em; font-size:1.5em; width: 3em">
+              <pre><code data-trim>
+input {
+  ...
+}
+
+...
+              </code></pre>
+              <img class="fragment" src="images/right-arrow.png" style="position: absolute; margin-top: -3.25em; margin-left: 1em" width="75%" />
+            </span>
+          </section>
+
+        </section>
+
+        <section>
+          <h3>Manageability: Inspecting the System</h3>
+
+          <section>
+            <h4>Today</h4>
+            <pre><code data-trim>
+$ ./bin/logstash agent -e 'input { stdin {} } output { stdout {} }'
+Logstash startup completed
+Test message on STDIN
+2015-10-24T02:06:15.581Z Shaunaks-MacBook-Pro.local Test message on STDIN
+^CSIGINT received. Shutting down the pipeline. {:level=>:warn}
+Received shutdown signal, but pipeline is still waiting for in-flight events
+to be processed. Sending another ^C will force quit Logstash, but this may cause
+data loss. {:level=>:warn}
+["INFLIGHT_EVENTS_REPORT", "2015-10-24T10:06:22+08:00", {"input_to_filter"=>0, "filter_to_output"=>1, "outputs"=>[]}] {:level=>:warn}
+["INFLIGHT_EVENTS_REPORT", "2015-10-24T10:06:27+08:00", {"input_to_filter"=>0, "filter_to_output"=>1, "outputs"=>[]}] {:level=>:warn}
+^CSIGINT received. Terminating immediately.. {:level=>:fatal}
+            </code></pre>
+          </section>
+
+          <section>
+            <h4>Future</h4>
+            <pre><code data-trim>
+$ curl http://localhost:7890/_stats
+{
+  "queues": {
+    "input_to_filter": 0,
+    "filter_to_output": 1,
+  },
+  "plugins": {
+    ...
+  }
+}
+            </code></pre>
+            <p style="font-size: 0.5em">(Sample API; Actual API may be different)</p>
+          </section>
+
+        </section>
+
+        <section>
+          <h3>Filebeat</h3>
+
+          <section>
+            <h4>Today</h4>
+          </section>
+
+          <section>
+            <h4>Future</h4>
+          </section>
+
+        </section>
+
+
+        <section>
+          <h2>Questions?</h2>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a></small>
+          </p>
+        </section>
+
+        <section>
+          <h3>Attributions</h3>
+          <ul>
+            <li><img src="images/queue.png" width="8%" /> icon by Huu Nguyen from the Noun Project</li>
+            <li><img src="images/disk.png" width="8%" /> icon by Mario Verduzco from the Noun Project</li>
+            <li><img src="images/server.png" width="8%" /> icon by Richard Schumann from the Noun Project</li>
+            <li><img src="images/manageability.png" width="8%" /> icon by Luis Prado from the Noun Project</li>
+            <li><img src="images/filebeat.png" width="8%" /> icon by Ilsur Aptukov from the Noun Project</li>
+            <li><img src="images/plugin.png" width="8%" /> icon by Icomatic from the Noun Project</li>
+            <li><img src="images/grumpy.png" width="8%" /> icon by ILKEBRS from the Noun Project</li>
+            <li><img src="images/failure.png" width="8%" /> icon by Anton Gajdosik from the Noun Project</li>
+          </ul>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
