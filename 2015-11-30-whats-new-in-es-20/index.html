@@ -7,7 +7,7 @@
     <title>What's new in Elasticsearch 2.0</title>
 
     <meta name="description" content="What's new in Elasticsearch 2.0">
-    <meta name="author" content="Igor Motov">
+    <meta name="author" content="Shaunak Kashyap">
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -43,19 +43,11 @@
         <section data-background="images/esbackground.png" data-state="eslogo">
             <h2>What's new in Elasticsearch 2.0</h2>
             <p>
-                <small><a href="https://github.com/imotov">Igor Motov</a> / <a href="http://twitter.com/imotov">@imotov</a></small>
+                <small><a href="https://github.com/ycombinator">Shaunak Kashyap</a> / <a href="http://twitter.com/shaunak">@shaunak</a></small>
             </p>
         </section>
 
         <section>
-            <section>
-                <h3>About Me</h3>
-                <ul>
-                    <li>Software Developer at Elastic</li>
-                    <li>Joined: Oct 2012</li>
-                    <li>Elasticsearch contributor since Apr 2011</li>
-                </ul>
-            </section>
             <section>
                 <h3>About Elastic</h3>
                 <ul>
@@ -73,52 +65,11 @@
                     </li>
                 </ul>
             </section>
-            <section>
-                <h3>About Elasticsearch</h3>
-                <p>
-                    <iframe src="//www.youtube.com/embed/sKnkQSec1U0" style="width: 580px; height: 326.25px;">
-                    </iframe>
-                </p>
-            </section>
-            <section>
-                <h3>About Elasticsearch</h3>
-                <ul>
-                    <li>Realtime search and analytics engine
-                        <ul>
-                            <li>JSON-oriented, Apache Lucene-based</li>
-                        </ul>
-                    </li>
-                    <li>Automatic Schema Detection
-                        <ul>
-                            <li>With full control of schema when needed</li>
-                        </ul>
-                    </li>
-                    <li>Distributed
-                        <ul>
-                            <li>Scales Up+Out, Highly Available</li>
-                        </ul>
-                    </li>
-                    <li>Multi-tenancy
-                        <ul>
-                            <li>Dynamically create/delete indices</li>
-                        </ul>
-                    </li>
-                    <li>API centric
-                        <ul>
-                            <li>Most functionalty is exposed throught an API</li>
-                        </ul>
-                    </li>
-                </ul>
-            </section>
         </section>
 
         <!-- Example of nested vertical slides -->
         <section>
-            <section>
-                <h2>Elasticsearch 2.0</h2>
-                <p>Very large release</p>
-                <p>&gt;2,500 Pull Requests</p>
-                <p>469 commiters</p>
+            <section data-background="images/es20-contrib-card.png" data-background-size="17em">
             </section>
             <section>
                 <h3>Focus on growing up</h3>
@@ -264,7 +215,7 @@
   "mappings": {
     "my_type": {
       "properties": {
-        "title": { "type": "string", "analyzer": "my_analyzer }
+        "title": { "type": "string", "analyzer": "my_analyzer" }
       }
     }
   }
@@ -306,37 +257,6 @@
                 <h2>Simplification: Query and Filter Execution Changes</h2>
             </section>
 
-            <section>
-                <h3>Before 2.0</h3>
-                <dl>
-                    <dt>Queries:</dt>
-                    <dd>
-                        <ul>
-                            <li>Typically contribute to scoring</li>
-                            <li>No caching</li>
-                        </ul>
-
-                    </dd>
-                    <dt>Filters:</dt>
-                    <dd>
-                        <ul>
-                            <li>Don't contribute to scoring</li>
-                            <li>Can be cached</li>
-                        </ul>
-
-                    </dd>
-                </dl>
-                <aside class="notes">
-                </aside>
-            </section>
-
-            <section>
-                <h3>Starting with 2.0</h3>
-                <ul>
-                    <li>Filters and queries are merged into queries</li>
-                    <li>The behavior of a query clause depends on whether it is used in query context or in filter context</li>
-                </ul>
-            </section>
             <section>
                 <h3>Before 2.0</h3>
                 <pre><code class="json">{
@@ -391,13 +311,13 @@
             </section>
 
             <section>
-                <h3>Query Caching</h3>
+                <h3>Filter Caching</h3>
                 <ul>
                     <li>Fully automatic</li>
-                    <li>Keeps track of 256 most recently used queries</li>
+                    <li>Keeps track of 256 most recently used filters</li>
                     <li>Only caches those that appear 5 times or more</li>
                     <li>Does not cache segments which have less than 10000 documents or 3% of the documents of the index</li>
-                    <li>More efficient query cache (roaring bitmaps)</li>
+                    <li>More efficient filter cache (roaring bitmaps)</li>
                     <li>Non-scoring components are cache-able</li>
                 </ul>
             </section>
@@ -422,7 +342,6 @@
                 <ul>
                     <li>Prevents outside access outside of elasticsearch even if elasticsearch process is compromised</li>
                     <li>All resources that elasticsearch can access are defined on node startup</li>
-                    <li>Some libs/plugins are unsecured!</li>
                 </ul>
             </section>
         </section>
@@ -483,14 +402,6 @@
                     <li>Only for indices created with 2.0</li>
                 </ul>
             </section>
-            <section>
-                <h3>Some cool recent reliability changes that you might have missed</h3>
-                <ul>
-                    <li>Sync-flush with <code>sync_id</code> (1.6)</li>
-                    <li>Async shard allocation (1.6) <i>was blocking cluster state</i></li>
-                    <li>Better handling of node leave/rejoin (1.7) <i>wait for one minute</i></li>
-                </ul>
-            </section>
         </section>
 
         <section>
@@ -505,7 +416,6 @@
                     <li>Moving average</li>
                     <li>Holt Winters (prediction / anomaly detection)</li>
                     <li>Stats: Min/Max/avg</li>
-                    <li>Time-series math</li>
                 </ul>
                 <aside class="notes">
                     We might do another presentation devoted to new agg features.
@@ -615,23 +525,6 @@ $ bin/plugin install file:p/to/cloud-aws-2.7.2.zip</code></pre>
 
         <section>
             <section>
-                <h3>elastic{ON} TOUR</h3>
-                <ul>
-                    <li>Amsterdam - Oct 29</li>
-                    <li>London - Nov 3</li>
-                    <li>Paris - Nov 5</li>
-                    <li>München - Nov 10</li>
-                    <li>New York - Nov 17</li>
-                    <li>Chicago - Nov 19</li>
-                    <li>Los Angeles - Dec 1</li>
-                    <li>Seattle - Dec 3</li>
-                    <li>Sydney - Dec 8</li>
-                    <li>Melbourne - Dec 10</li>
-                    <li>Tokyo - Dec 16</li>
-                </ul>
-
-            </section>
-            <section>
                 <h3>elastic{ON} <sup>'16</sup></h3>
                 <ul>
                     <li>Feb 17-19, 2016</li>
@@ -646,8 +539,8 @@ $ bin/plugin install file:p/to/cloud-aws-2.7.2.zip</code></pre>
         <section style="text-align: left;">
             <h1>THE END</h1>
             <ul>
-                <li>Slides: <a href="https://imotov.github.io/presentations" target="_blank">https://imotov.github.io/presentations</a></li>
-                <li>Twitter: <a href="https://twitter.com/imotov" target="_blank">@imotov</a></li>
+                <li>Slides: <a href="https://ycombinator.github.io/presentations" target="_blank">https://ycombinator.github.io/presentations</a></li>
+                <li>Twitter: <a href="https://twitter.com/shaunak" target="_blank">@shaunak</a></li>
             </ul>
         </section>
 
