@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Introduction to Elasticsearch</title>
+
+    <meta name="description" content="Introduction to Elasticsearch">
+    <meta name="author" content="Shaunak Kashyap">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/beige.css" id="theme">
+    <link rel="stylesheet" href="css/override.css">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h2>Introduction to Elasticsearch</h2>
+          <p>
+            <small>Shaunak Kashyap &bull; <a href="https://twitter.com/shaunak">@shaunak</a> &bull; Developer at <a href="https://www.elastic.co">Elastic</a></small>
+          </p>
+        </section>
+
+        <section>
+          <section>
+            <h2>Why use Elasticsearch?</h2>
+          </section>
+          <section>
+            <p>Full text search</p>
+            <p><img src="images/wikipedia.png" /></p>
+          </section>
+          <section>
+            <p>Structured search</p>
+            <p><img src="images/github.png" /></p>
+          </section>
+          <section>
+            <p>Faceted navigation</p>
+            <p><img src="images/kayak.png" width="25%" /></p>
+          </section>
+          <section>
+            <p>Analytics</p>
+            <p><img src="images/kibana.png" /></p>
+          </section>
+        </section>
+
+        <section>
+          <h2>Features</h2>
+          <ul>
+            <li class="fragment">Easy to get started<span class="fragment"> &mdash; <a href="https://www.elastic.co/downloads/elasticsearch">download</a>, extract, run!</span></li>
+            <li class="fragment">Scalable<span class="fragment"> &mdash; just add or remove nodes as needed</span></li>
+            <li class="fragment"><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html">Well-documented</a> HTTP API</li>
+            <li class="fragment">Supported clients for .NET, Node.js, ...<span class="fragment">, even Perl &#9787;</span></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Some Concepts</h2>
+          <dl>
+            <div>
+              <dt>Document</dt>
+              <dd>The unit of data fed into Elasticsearch, in JSON format</dd>
+              <pre><code data-trim>
+{
+  "from": "tony@stark.com",
+  "to": [ "thor@avengers.org", "natasha@avengers.org" ],
+  "subject": "Infinity Stones",
+  "body": "..."
+}
+              </code></pre>
+              <aside class="notes">
+                Example: a single email
+              </aside>
+            </div>
+            <div class="fragment">
+              <dt>Index</dt>
+              <dd>A collection of documents stored in Elasticsearch</dd>
+              <aside class="notes">
+                Example: an index of emails
+              </aside>
+            </div>
+            <div class="fragment">
+              <dt>Type</dt>
+              <dd>The category of the document within an index</dd>
+              <aside class="notes">
+                Example: index may contain two types of documents - emails and attachments
+              </aside>
+            </div>
+          </dl>
+        </section>
+
+        <section>
+          <section>
+            <img src="images/demo-time-baby.jpg" />
+          </section>
+          <section>
+            <img src="images/tweet.png" />
+          </section>
+        </section>
+
+
+          <section>
+            <h2>More Concepts</h2>
+            <dl>
+              <div>
+                <dt>Shard</dt>
+                <dd>A part of an index, consisting of a subset of documents in that index</dd>
+              </div>
+              <div class="fragment">
+                <dt>Node</dt>
+                <dd>A running Elasticsearch process</dd>
+              </div>
+              <div class="fragment">
+                <dt>Cluster</dt>
+                <dd>A collection of nodes that can communicate with each other <em>and</em> share the same <code>cluster.name</code></dd>
+              </div>
+            </dl>
+          </section>
+
+        </section>
+
+        <section>
+          <img src="images/under-the-hood.jpg" width="70%" />
+        </section>
+
+        <section>
+
+          <section>
+            <h2>A cluster of one node</h2>
+            <pre><code data-trim>
+C:\elasticsearch-1.7.0> bin\elasticsearch
+            </code></pre>
+            <img src="images/single-node-cluster.png" />
+          </section>
+          <section>
+            <h2>Creating an index</h2>
+            <pre><code data-trim>
+PUT /twitter
+{
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1
+  }
+}
+            </code></pre>
+            <img src="images/add-an-index.png" />
+          </section>
+          <section>
+            <h2>Add another node</h2>
+            <pre><code data-trim>
+C:\elasticsearch-1.7.0> bin\elasticsearch
+            </code></pre>
+            <img src="images/add-another-node.png" />
+          </section>
+          <section>
+            <h2>Scaling horizontally</h2>
+            <pre><code data-trim>
+C:\elasticsearch-1.7.0> bin\elasticsearch
+            </code></pre>
+            <img src="images/scale-horizontally.png" />
+          </section>
+          <section>
+            <h2>Lose a node</h2>
+            <pre><code data-trim>
+C:\elasticsearch-1.7.0> bin\elasticsearch
+...
+Ctrl-C
+            </code></pre>
+            <img src="images/lose-a-node.png" />
+          </section>
+
+        </section>
+
+        <section>
+          <h3>Indexing a document</h3>
+          <pre><code data-trim>
+PUT /twitter/tweet/311335361169195009
+{
+  "message": "In startup we are practice Outage Driven Infrastructure.",
+  "@timestamp": "2013-03-12T04:38:29.000Z"
+}
+          </code></pre>
+          <p><img src="images/index-lifecycle.png" /></p>
+        </section>
+
+        <section>
+          <h3>Searching for documents</h3>
+          <pre><code data-trim>
+GET twitter/_search?q=devops
+          </code></pre>
+          <section>
+            <p>&nbsp;</p>
+            <h4>Query Phase</h4>
+            <p><img src="images/search-lifecycle-query-phase.png" /></p>
+          </section>
+          <section>
+            <p>&nbsp;</p>
+            <h4>Fetch Phase</h4>
+            <p><img src="images/search-lifecycle-fetch-phase.png" /></p>
+          </section>
+        </section>
+
+        <section>
+          <h3>Today we learned</h3>
+          <ul>
+            <li>Types of applications that can be built with Elasticsearch</li>
+            <li>Key features of Elasticsearch</li>
+            <li>Some sample index, search, and aggregations queries</li>
+            <li>Key concepts</li>
+            <li>How clusters work under the hood</li>
+            <li>How indexing and searching work under the hood</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Thank You</h2>
+          <small>Shaunak Kashyap &bull; Developer at <a href="https://www.elastic.co">Elastic</a> &bull; <a href="https://twitter.com/shaunak">@shaunak</a></small>
+          <p><a href="https://discuss.elastic.co/">https://discuss.elastic.co/</a></p>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
